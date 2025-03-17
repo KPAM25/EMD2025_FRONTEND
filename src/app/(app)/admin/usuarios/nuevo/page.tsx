@@ -1,13 +1,13 @@
 'use client';
 import { HeaderPageComponent } from '@/components/header-page';
 import React from 'react';
-//import { PersonalInfoForm } from '@/components/forms/person-forms';
-//import dayjs from 'dayjs';
+import { PersonalInfoForm } from '@/components/forms/person-form';
+import dayjs from 'dayjs';
 const NewUserPage = () => {
   return (
     <div>
-      <HeaderPageComponent title='Nuevo usuario' />
-      {/* <PersonalInfoForm
+      <HeaderPageComponent title='Nueva persona' />
+      <PersonalInfoForm
         onSubmit={() => {}}
         initialData={{
           nombre: 'Juan',
@@ -19,8 +19,9 @@ const NewUserPage = () => {
           sexo: '1',
           paisNacimiento: '142',
           estadoNacimiento: '1',
+          curp: '',
         }}
-      /> */}
+      />
     </div>
   );
 };
