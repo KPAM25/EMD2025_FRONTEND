@@ -7,7 +7,6 @@ export default async function Home() {
 
   const accessToken = cookieStore.get('accessToken');
 
-  console.log(accessToken);
   if (false) {
     redirect('/auth/iniciar-sesion');
   } else {

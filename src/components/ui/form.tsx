@@ -122,9 +122,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
       }
       aria-invalid={!!error}
       data-error={!!error}
-      className={cn(
-        'data-[error=true]:border-destructive data-[error=true]:ring-1 data-[error=true]:ring-destructive'
-      )}
+      className={cn('data-[error=true]:border-destructive')}
       {...props}
     />
   );
@@ -155,7 +153,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot='form-message'
       id={formMessageId}
-      className={cn('text-destructive text-sm font-medium', className)}
+      className={cn('text-destructive text-sm', className)}
       {...props}
     >
       {body}

@@ -41,7 +41,6 @@ export function ZodForm<
     defaultValues,
   });
 
-  console.log(methods.watch());
 
   return (
     <Form {...methods}>

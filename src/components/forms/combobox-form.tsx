@@ -12,7 +12,7 @@ import {
   CommandList,
 } from '../ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { FieldWrapper } from '@/components/forms/field-wrapper';
+import { FieldWrapper } from './field-wrapper';
 import { useFormContext } from 'react-hook-form';
 export type ComboboxOption = {
   label: string;
@@ -90,12 +90,15 @@ export const ComboboxField = ({
                         key={option.value}
                         value={option.label}
                         onSelect={(currentValue) => {
-                          if (field.value === currentValue) {
+                          const selectedOption = safeOptions.find(
+                            (opt) => opt.label === currentValue
+                          );
+                          if (field.value === selectedOption?.value) {
                             form.setValue(name, '');
                             onChange?.('');
                           } else {
-                            form.setValue(name, currentValue);
-                            onChange?.(currentValue);
+                            form.setValue(name, selectedOption?.value || '');
+                            onChange?.(selectedOption?.value || '');
                           }
                           setOpen(false);
                         }}

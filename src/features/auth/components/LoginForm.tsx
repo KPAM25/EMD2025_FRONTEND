@@ -46,7 +46,6 @@ export function LoginForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Esta función se conectará con el backend más adelante
     router.push('/dashboard');
-    console.log(values);
   }
 
   return (
