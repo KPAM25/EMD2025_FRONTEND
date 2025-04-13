@@ -4,7 +4,6 @@ import { InputField } from './input-field';
 import { ComboboxField } from './combobox-form';
 import { Button } from '../ui/button';
 import {
-  PAIS_CATALOGO,
   ENTIDAD_FEDERATIVA_CATALOGO,
   SEXO_CATALOG,
 } from '@/constants/catalogs';
@@ -16,6 +15,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import useCurpBuilder from '@/hooks/curpBuilder';
 import { evaluateBadWords } from '@/helpers/curp';
 import { ExpedientePersonalInfo, expedientePersonalInfoSchema, obtenerFechaMinima, soloTextoProcesador } from '@/models/persona-info.schema';
+import { usePaises } from '@/hooks/usePaises';
+import { useEntidades } from '@/hooks/useEntidades';
+import { useSexos } from '@/hooks/useSexos';
 
 /**
  * Componente de formulario para información personal, que puede incluir campos de expediente.
@@ -61,6 +63,44 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     const fechaMin = obtenerFechaMinima(currentTipoPerson);
     return dayjs(fechaMin).format('YYYY-MM-DD');
   }, [mostrarCamposPaciente, tipoPerson]);
+
+  // Agregar el hook de países
+  const { paises, isLoading: paisesLoading, error: paisesError } = usePaises();
+
+  // Obtener el valor actual del país seleccionado
+  const paisSeleccionado = watch('paisNacimiento');
+
+  // Agregar el hook de entidades
+  const { 
+    entidades, 
+    isLoading: entidadesLoading, 
+    error: entidadesError 
+  } = useEntidades(paisSeleccionado);
+
+  // Agregar el hook de sexos
+  const { sexos, isLoading: sexosLoading, error: sexosError } = useSexos();
+
+  // Transformar los datos de la API al formato esperado por el ComboboxField
+  const paisesOptions = useMemo(() => {
+    return paises.map(pais => ({
+      id: pais.idPais,
+      descripcion: pais.descripcion
+    }));
+  }, [paises]);
+
+  const entidadesOptions = useMemo(() => {
+    return entidades.map(entidad => ({
+      id: entidad.catalogKey,
+      descripcion: entidad.entidadFederativa,
+    }));
+  }, [entidades]);
+
+  const sexosOptions = useMemo(() => {
+    return sexos.map(sexo => ({
+      id: sexo.catalogKey,
+      descripcion: sexo.descripcion
+    }));
+  }, [sexos]);
 
   // Manejador para cambiar el estado de persona desconocida
   const handleUnknownPerson = () => {
@@ -178,8 +218,9 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     }
   }, [curp, setValue, curpFormValues, setFormValues, esDesconocido]);
 
-  // Manejar el cambio de país para limpiar el estado de nacimiento
+  // Modificar el manejador de cambio de país
   const handleCountryChange = () => {
+    // Limpiar el estado de nacimiento cuando cambie el país
     setValue('estadoNacimiento', '', { shouldValidate: true });
   };
 
@@ -231,7 +272,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     )?.abreviatura;
     const country = PersonalInfo.paisNacimiento;
     const seventeenthDigit = inputCurpValue[16];
-    const idMexico = '142';
+    const idMexico = '141';
 
     // Función auxiliar para identificar la CURP genérica
     const isGeneric = inputCurpValue === 'XXXX999999XXXXXX99';
@@ -557,10 +598,15 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <ComboboxField
               name='sexo'
               label='Sexo'
-              options={getCatalogOptions(SEXO_CATALOG)}
-              placeholder='Seleccione el sexo'
-              disabled={esDesconocido}
+              options={getCatalogOptions(sexosOptions)}
+              placeholder={sexosLoading ? 'Cargando sexos...' : 'Seleccione el sexo'}
+              disabled={esDesconocido || sexosLoading}
             />
+            {sexosError && (
+              <p className='text-sm text-red-500 mt-1'>
+                Error al cargar los sexos: {sexosError}
+              </p>
+            )}
           </div>
 
           {/* País de Nacimiento */}
@@ -568,11 +614,16 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <ComboboxField
               name='paisNacimiento'
               label='País de Nacimiento'
-              options={getCatalogOptions(PAIS_CATALOGO)}
-              placeholder='Seleccione el país'
+              options={getCatalogOptions(paisesOptions)}
+              placeholder={paisesLoading ? 'Cargando países...' : 'Seleccione el país'}
               onChange={handleCountryChange}
-              disabled={esDesconocido}
+              disabled={esDesconocido || paisesLoading}
             />
+            {paisesError && (
+              <p className='text-sm text-red-500 mt-1'>
+                Error al cargar los países: {paisesError}
+              </p>
+            )}
           </div>
 
           {/* Estado de Nacimiento */}
@@ -580,10 +631,21 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <ComboboxField
               name='estadoNacimiento'
               label='Estado de Nacimiento'
-              options={getCatalogOptions(ENTIDAD_FEDERATIVA_CATALOGO)}
-              placeholder='Seleccione el estado'
-              disabled={esDesconocido}
+              options={getCatalogOptions(entidadesOptions)}
+              placeholder={
+                entidadesLoading 
+                  ? 'Cargando estados...' 
+                  : !paisSeleccionado 
+                    ? 'Seleccione primero un país' 
+                    : 'Seleccione el estado'
+              }
+              disabled={esDesconocido || entidadesLoading || !paisSeleccionado}
             />
+            {entidadesError && (
+              <p className='text-sm text-red-500 mt-1'>
+                Error al cargar los estados: {entidadesError}
+              </p>
+            )}
           </div>
 
           {/* CURP */}

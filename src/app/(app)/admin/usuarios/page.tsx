@@ -10,10 +10,13 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 
 const UsersPage = () => {
-  const { data: personas, isLoading } = useQuery<Persona[]>({
+  const { data: personas, isLoading, error } = useQuery<Persona[]>({
     queryKey: ['personas'],
     queryFn: async () => {
       const response = await api.get('/persona/getAllEstatus/1');
+      if (!response.data || response.data.length === 0) {
+        throw new Error('No se encontraron usuarios');
+      }
       return response.data;
     },
   });
@@ -28,6 +31,14 @@ const UsersPage = () => {
 
   if (isLoading) {
     return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!personas || personas.length === 0) {
+    return <div>No hay usuarios registrados</div>;
   }
 
   return (

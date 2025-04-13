@@ -8,6 +8,7 @@ import { Modal } from '@/components/ui/modal';
 import { ExpedientePersonalInfo } from '@/models/persona-info.schema';
 import { ConfirmationCard, formatters } from '@/components/ui/confirmation-card';
 import api from '@/lib/api';
+import { AxiosError } from 'axios';
 
 // Componente para mostrar datos de confirmación con buena UI/UX
 const ConfirmUserData = ({ data }: { data: ExpedientePersonalInfo }) => {
@@ -90,20 +91,20 @@ const NewUserPage = () => {
           }
         } catch (error: unknown) {
           console.error('Error completo:', error);
-          
-          // Mejoramos el manejo de errores
           let errorMessage = 'Error al crear el usuario';
           
-          if (error instanceof Error) {
-            errorMessage = error.message;
-            if ('response' in error) {
-              const axiosError = error as any;
-              errorMessage = axiosError.response?.data || error.message;
+          if (error instanceof AxiosError) {
+            if (error.response?.data?.message) {
+              errorMessage = error.response.data.message;
+            } else if (error.response?.data) {
+              errorMessage = JSON.stringify(error.response.data);
+            } else if (error.message) {
+              errorMessage = error.message;
             }
           }
           
-          console.log('Mensaje de error:', errorMessage);
-          // Aquí podrías mostrar el error al usuario
+          // Aquí podrías mostrar el error al usuario de manera más amigable
+          alert(errorMessage); // O usar un componente de notificación más elegante
         }
       },
     });
