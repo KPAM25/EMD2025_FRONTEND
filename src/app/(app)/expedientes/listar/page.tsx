@@ -10,47 +10,50 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Usuario } from '@/features/usuarios/interfaces/usuario';
-import { mockUsuarios } from '@/features/usuarios/mock/usuarios.mock';
+import { Expediente } from '@/features/expedientes/interfaces/expediente';
+import { mockExpedientes } from '@/features/expedientes/mock/expedientes.mock';
 import { DataTablePagination } from '@/components/tables/data-table-pagination';
 import { DataTableColumnHeader } from '@/components/tables/data-table-column-header';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
-const columns: ColumnDef<Usuario>[] = [
+const columns: ColumnDef<Expediente>[] = [
   {
-    accessorKey: 'username',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Usuario' />,
+    accessorKey: 'expedienteGeneral',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Expediente' />,
     cell: ({ row }) => (
-      <div className='font-medium'>{row.getValue('username')}</div>
+      <div className='font-medium'>{row.getValue('expedienteGeneral')}</div>
     ),
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
-  },
-  {
     accessorKey: 'persona.nombreCompleto',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Persona' />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Paciente' />,
     cell: ({ row }) => (
       <div>{row.original.persona.nombreCompleto}</div>
     ),
   },
   {
-    accessorKey: 'rol',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Rol' />,
+    accessorKey: 'persona.curp',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='CURP' />,
     cell: ({ row }) => (
-      <Badge variant='outline'>{row.getValue('rol')}</Badge>
+      <div className='font-mono text-sm'>{row.original.persona.curp}</div>
     ),
   },
   {
-    accessorKey: 'fechaCreacion',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha Creación' />,
+    accessorKey: 'tipoSangre',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Tipo de Sangre' />,
     cell: ({ row }) => (
-      <div>{new Date(row.getValue('fechaCreacion')).toLocaleDateString('es-MX')}</div>
+      <Badge variant='outline'>{row.getValue('tipoSangre')}</Badge>
+    ),
+  },
+  {
+    accessorKey: 'persona.fechaNacimiento',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha Nacimiento' />,
+    cell: ({ row }) => (
+      <div>{new Date(row.original.persona.fechaNacimiento).toLocaleDateString('es-MX')}</div>
     ),
   },
   {
@@ -65,10 +68,23 @@ const columns: ColumnDef<Usuario>[] = [
       );
     },
   },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const expediente = row.original;
+      return (
+        <Link href={`/expedientes/${expediente.idPaciente}`}>
+          <Button variant='ghost' size='sm'>
+            <Eye className='h-4 w-4' />
+          </Button>
+        </Link>
+      );
+    },
+  },
 ];
 
-export default function UsuariosListPage() {
-  const data = useMemo(() => mockUsuarios, []);
+export default function ExpedientesListPage() {
+  const data = useMemo(() => mockExpedientes, []);
 
   const table = useReactTable({
     data,
@@ -85,15 +101,7 @@ export default function UsuariosListPage() {
 
   return (
     <div className='flex flex-col gap-5'>
-      <div className='flex items-center justify-between'>
-        <HeaderPageComponent title='Usuarios' />
-        <Link href='/admin/usuarios/nuevo'>
-          <Button>
-            <Plus className='h-4 w-4 mr-2' />
-            Nuevo Usuario
-          </Button>
-        </Link>
-      </div>
+      <HeaderPageComponent title='Expedientes' />
 
       <div className='rounded-md border'>
         <Table>
@@ -136,3 +144,4 @@ export default function UsuariosListPage() {
     </div>
   );
 }
+

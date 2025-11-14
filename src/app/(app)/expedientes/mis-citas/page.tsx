@@ -10,65 +10,57 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Usuario } from '@/features/usuarios/interfaces/usuario';
-import { mockUsuarios } from '@/features/usuarios/mock/usuarios.mock';
+import { Cita } from '@/features/expedientes/interfaces/expediente';
+import { mockCitas } from '@/features/expedientes/mock/expedientes.mock';
 import { DataTablePagination } from '@/components/tables/data-table-pagination';
 import { DataTableColumnHeader } from '@/components/tables/data-table-column-header';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
 
-const columns: ColumnDef<Usuario>[] = [
+const columns: ColumnDef<Cita>[] = [
   {
-    accessorKey: 'username',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Usuario' />,
+    accessorKey: 'fecha',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha' />,
     cell: ({ row }) => (
-      <div className='font-medium'>{row.getValue('username')}</div>
+      <div>{new Date(row.getValue('fecha')).toLocaleDateString('es-MX')}</div>
     ),
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
+    accessorKey: 'hora',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Hora' />,
   },
   {
-    accessorKey: 'persona.nombreCompleto',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Persona' />,
+    accessorKey: 'paciente.nombreCompleto',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Paciente' />,
     cell: ({ row }) => (
-      <div>{row.original.persona.nombreCompleto}</div>
+      <div>{row.original.paciente.nombreCompleto}</div>
     ),
   },
   {
-    accessorKey: 'rol',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Rol' />,
-    cell: ({ row }) => (
-      <Badge variant='outline'>{row.getValue('rol')}</Badge>
-    ),
+    accessorKey: 'medico',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Médico' />,
   },
   {
-    accessorKey: 'fechaCreacion',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha Creación' />,
-    cell: ({ row }) => (
-      <div>{new Date(row.getValue('fechaCreacion')).toLocaleDateString('es-MX')}</div>
-    ),
+    accessorKey: 'motivo',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Motivo' />,
   },
   {
     accessorKey: 'estatus',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Estatus' />,
     cell: ({ row }) => {
-      const estatus = row.getValue('estatus') as number;
+      const estatus = row.getValue('estatus') as string;
+      const variant = estatus === 'programada' ? 'default' : estatus === 'completada' ? 'secondary' : 'destructive';
       return (
-        <Badge variant={estatus === 1 ? 'default' : 'secondary'}>
-          {estatus === 1 ? 'Activo' : 'Inactivo'}
+        <Badge variant={variant}>
+          {estatus === 'programada' ? 'Programada' : estatus === 'completada' ? 'Completada' : 'Cancelada'}
         </Badge>
       );
     },
   },
 ];
 
-export default function UsuariosListPage() {
-  const data = useMemo(() => mockUsuarios, []);
+export default function MisCitasPage() {
+  const data = useMemo(() => mockCitas, []);
 
   const table = useReactTable({
     data,
@@ -85,15 +77,7 @@ export default function UsuariosListPage() {
 
   return (
     <div className='flex flex-col gap-5'>
-      <div className='flex items-center justify-between'>
-        <HeaderPageComponent title='Usuarios' />
-        <Link href='/admin/usuarios/nuevo'>
-          <Button>
-            <Plus className='h-4 w-4 mr-2' />
-            Nuevo Usuario
-          </Button>
-        </Link>
-      </div>
+      <HeaderPageComponent title='Mis Citas' />
 
       <div className='rounded-md border'>
         <Table>
@@ -124,7 +108,7 @@ export default function UsuariosListPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  No hay resultados.
+                  No hay citas programadas.
                 </TableCell>
               </TableRow>
             )}
@@ -136,3 +120,4 @@ export default function UsuariosListPage() {
     </div>
   );
 }
+

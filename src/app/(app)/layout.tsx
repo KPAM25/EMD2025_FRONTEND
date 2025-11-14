@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <header className='sticky top-0 z-10 flex items-center justify-between w-full px-4 h-16 border-b bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
               <div className='flex items-center'>
                 <SidebarTrigger className='mr-4' />
-                <h1 className='text-lg font-medium'>Sistema de Gestión Médica</h1>
+                <h1 className='text-lg font-medium'>Sistema EMD - Expediente Medico Digital</h1>
               </div>
               <div className='flex items-center space-x-3'>
                 <Button variant='ghost' size='icon' className='relative'>

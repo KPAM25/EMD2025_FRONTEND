@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Command } from "lucide-react"
+import { Stethoscope } from "lucide-react"
 import { NavUser } from "./nav-user"
 import type { AuthorizedUser, Permission } from "@/interfaces/permission"
 import { hasRequiredPermission } from "@/utils/permissions"
@@ -96,11 +96,11 @@ export function AppSidebar({ items, user, ...props }: AppSidebarProps) {
               <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
                 <Link href="/dashboard">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Command className="size-4" />
+                    <Stethoscope className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Acme Inc</span>
-                    <span className="truncate text-xs">Enterprise</span>
+                    <span className="truncate font-semibold">Sistema EMD</span>
+                    <span className="truncate text-xs">Expediente Medico Digital</span>
                   </div>
                 </Link>
               </SidebarMenuButton>

@@ -10,54 +10,58 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Usuario } from '@/features/usuarios/interfaces/usuario';
-import { mockUsuarios } from '@/features/usuarios/mock/usuarios.mock';
+import { Persona } from '@/features/personas/interfaces/persona';
+import { mockPersonas } from '@/features/personas/mock/personas.mock';
 import { DataTablePagination } from '@/components/tables/data-table-pagination';
 import { DataTableColumnHeader } from '@/components/tables/data-table-column-header';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Eye, Plus } from 'lucide-react';
 import Link from 'next/link';
 
-const columns: ColumnDef<Usuario>[] = [
+const columns: ColumnDef<Persona>[] = [
   {
-    accessorKey: 'username',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Usuario' />,
+    accessorKey: 'nombreCompleto',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Nombre Completo' />,
     cell: ({ row }) => (
-      <div className='font-medium'>{row.getValue('username')}</div>
+      <div className='font-medium'>{row.getValue('nombreCompleto')}</div>
     ),
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
-  },
-  {
-    accessorKey: 'persona.nombreCompleto',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Persona' />,
+    accessorKey: 'curp',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='CURP' />,
     cell: ({ row }) => (
-      <div>{row.original.persona.nombreCompleto}</div>
+      <div className='font-mono text-sm'>{row.getValue('curp')}</div>
     ),
   },
   {
-    accessorKey: 'rol',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Rol' />,
+    accessorKey: 'rfc',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='RFC' />,
     cell: ({ row }) => (
-      <Badge variant='outline'>{row.getValue('rol')}</Badge>
+      <div className='font-mono text-sm'>{row.getValue('rfc')}</div>
     ),
   },
   {
-    accessorKey: 'fechaCreacion',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha Creación' />,
+    accessorKey: 'fechaNacimiento',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Fecha Nacimiento' />,
     cell: ({ row }) => (
-      <div>{new Date(row.getValue('fechaCreacion')).toLocaleDateString('es-MX')}</div>
+      <div>{new Date(row.getValue('fechaNacimiento')).toLocaleDateString('es-MX')}</div>
     ),
   },
   {
-    accessorKey: 'estatus',
+    accessorKey: 'sexo',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Sexo' />,
+  },
+  {
+    accessorKey: 'estado',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Estado' />,
+  },
+  {
+    accessorKey: 'estatusPersona',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Estatus' />,
     cell: ({ row }) => {
-      const estatus = row.getValue('estatus') as number;
+      const estatus = row.getValue('estatusPersona') as number | undefined;
       return (
         <Badge variant={estatus === 1 ? 'default' : 'secondary'}>
           {estatus === 1 ? 'Activo' : 'Inactivo'}
@@ -65,10 +69,23 @@ const columns: ColumnDef<Usuario>[] = [
       );
     },
   },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const persona = row.original;
+      return (
+        <Link href={`/admin/personas/${persona.idPersona}`}>
+          <Button variant='ghost' size='sm'>
+            <Eye className='h-4 w-4' />
+          </Button>
+        </Link>
+      );
+    },
+  },
 ];
 
-export default function UsuariosListPage() {
-  const data = useMemo(() => mockUsuarios, []);
+export default function PersonasListPage() {
+  const data = useMemo(() => mockPersonas, []);
 
   const table = useReactTable({
     data,
@@ -86,11 +103,11 @@ export default function UsuariosListPage() {
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex items-center justify-between'>
-        <HeaderPageComponent title='Usuarios' />
-        <Link href='/admin/usuarios/nuevo'>
+        <HeaderPageComponent title='Personas' />
+        <Link href='/admin/personas/nueva'>
           <Button>
             <Plus className='h-4 w-4 mr-2' />
-            Nuevo Usuario
+            Nueva Persona
           </Button>
         </Link>
       </div>
@@ -136,3 +153,4 @@ export default function UsuariosListPage() {
     </div>
   );
 }
+
